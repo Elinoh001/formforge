@@ -16,6 +16,7 @@ from kivy.uix.textinput import TextInput
 
 from core.constants import ScreenNames
 from core.exceptions import ValidationError
+from generator.project_generator import ProjectGenerator
 from services.entity_service import EntityService
 from widgets.entity_card import EntityCard
 
@@ -83,6 +84,26 @@ Builder.load_string(
             color: 1, 1, 1, 1
             font_size: "15sp"
             on_release: root.open_create_popup()
+
+        Label:
+            id: generate_status_label
+            text: ""
+            font_size: "12sp"
+            size_hint_y: None
+            height: dp(20) if self.text else 0
+            halign: "left"
+            text_size: self.size
+            color: 0.5, 0.85, 0.5, 1
+
+        Button:
+            text: "📦  Générer le projet"
+            size_hint_y: None
+            height: dp(52)
+            background_normal: ""
+            background_color: 0.16, 0.55, 0.35, 1
+            color: 1, 1, 1, 1
+            font_size: "15sp"
+            on_release: root.generate_project()
     """
 )
 
@@ -133,8 +154,22 @@ class EntityBuilderScreen(Screen):
             container.add_widget(card)
 
     def open_entity(self, entity):
-        """Point d'extension : ouvrira le Field Builder à l'étape suivante."""
-        pass
+        field_builder = self.manager.get_screen(ScreenNames.FIELD_BUILDER)
+        field_builder.set_entity(entity)
+        self.manager.current = ScreenNames.FIELD_BUILDER
+
+    def generate_project(self):
+        label = self.ids.generate_status_label
+        try:
+            output_path = ProjectGenerator().generate(self._application.id)
+            label.color = (0.5, 0.85, 0.5, 1)
+            label.text = f"✓ Projet généré : {output_path}"
+        except ValidationError as exc:
+            label.color = (1, 0.4, 0.4, 1)
+            label.text = f"✕ {exc}"
+        except Exception as exc:  # génération = opération sensible, jamais de crash silencieux
+            label.color = (1, 0.4, 0.4, 1)
+            label.text = f"✕ Erreur de génération : {exc}"
 
     def open_create_popup(self):
         layout = BoxLayout(orientation="vertical", spacing=dp(10), padding=dp(16))

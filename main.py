@@ -10,6 +10,7 @@ from database.database import Database
 from screens.application_builder_screen import ApplicationBuilderScreen
 from screens.applications_screen import ApplicationsScreen
 from screens.entity_builder_screen import EntityBuilderScreen
+from screens.field_builder_screen import FieldBuilderScreen
 from screens.home_screen import HomeScreen
 from utils.logger import setup_logging
 
@@ -32,6 +33,7 @@ class FormForgeApp(App):
         manager.add_widget(ApplicationsScreen(name=ScreenNames.APPLICATIONS))
         manager.add_widget(ApplicationBuilderScreen(name=ScreenNames.APPLICATION_BUILDER))
         manager.add_widget(EntityBuilderScreen(name=ScreenNames.ENTITY_BUILDER))
+        manager.add_widget(FieldBuilderScreen(name=ScreenNames.FIELD_BUILDER))
         manager.current = ScreenNames.HOME
         return manager
 
